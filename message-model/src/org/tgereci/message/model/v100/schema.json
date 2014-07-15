@@ -1,0 +1,36 @@
+{
+	"type":"object",
+	"$schema": "http://json-schema.org/draft-03/schema",
+	"required":true,
+	"properties":{
+		"messageData": {
+			"type":"object",
+			"required":false,
+			"properties":{
+				"mMX": {
+					"type":"integer",
+					"required":false
+				},
+				"mPermGen": {
+					"type":"integer",
+					"required":false
+				}
+			}
+		},
+		"messageId": {
+			"type":"integer",
+			"required":true,
+			"minimum": 1
+		},
+		"protocolVersion": {
+			"type":"string",
+			"required":true,
+			"pattern":"\\d{1,2}\\.\\d{1}.\\d{1}$"
+		},
+		"timestamp": {
+			"type":"integer",
+			"required":true,
+			"minimum": 1
+		}
+	}
+}
