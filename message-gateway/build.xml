@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build" name="message-gateway">
+	<!-- TODO update catalina.home to your locat tomcat folder -->
+	<property name="catalina.home" value="../../../../apache-tomcat-7.0.47" />
+	<property name="message-model.location" value="../message-model" />
+
+	<path id="build.classpath">
+		<fileset dir="WebContent/WEB-INF/lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${catalina.home}/lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${message-model.location}/dist">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init">
+		<mkdir dir="build/classes" />
+		<copy includeemptydirs="false" todir="build/classes">
+			<fileset dir="src">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+		<mkdir dir="dist" />
+	</target>
+	<target name="clean">
+		<delete dir="dist" />
+		<delete dir="build" />
+	</target>
+	<target name="cleanall" depends="clean">
+		<ant antfile="build.xml" dir="${message-model.location}" inheritAll="false" target="clean" />
+	</target>
+
+	<target name="build-project" depends="init">
+		<javac destdir="build/classes" debug="true" srcdir="src" includeantruntime="false">
+			<classpath refid="build.classpath" />
+		</javac>
+	</target>
+	<target name="build-subprojects">
+		<ant antfile="build.xml" dir="${message-model.location}" inheritAll="false" target="jar" />
+	</target>
+	<target name="build" depends="build-subprojects,build-project" />
+
+	<target name="war" depends="cleanall,build">
+		<war destfile="dist/${ant.project.name}.war">
+			<fileset dir="WebContent" />
+			<lib dir="${message-model.location}/dist" />
+			<classes dir="build/classes" />
+			<manifest>
+				<attribute name="Class-Path" value="" />
+			</manifest>
+		</war>
+	</target>
+</project>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build" name="message-model">
+	<target name="init">
+		<mkdir dir="bin" />
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="src">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="clean">
+		<delete dir="bin" />
+	</target>
+	<target name="cleanall" depends="clean" />
+
+	<target name="build-project" depends="init">
+		<javac destdir="bin" debug="true" srcdir="src" includeantruntime="false" />
+	</target>
+	<target name="build-subprojects" />
+	<target name="build" depends="build-subprojects,build-project" />
+
+	<target name="jar" depends="cleanall,build">
+		<jar destfile="dist/${ant.project.name}.jar" basedir="bin">
+			<manifest>
+				<attribute name="Class-Path" value="" />
+			</manifest>
+		</jar>
+	</target>
+</project>

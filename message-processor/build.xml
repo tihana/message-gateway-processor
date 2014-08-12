@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build" name="message-processor">
+	<property name="message-model.location" value="../message-model" />
+
+	<path id="build.classpath">
+		<fileset dir="lib">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="${message-model.location}/bin" />
+	</path>
+	<pathconvert property="manifest.classpath" pathsep=" ">
+		<path refid="build.classpath" />
+		<mapper>
+			<chainedmapper>
+				<flattenmapper />
+				<globmapper from="*.jar" to="${ant.project.name}_lib/*.jar" />
+			</chainedmapper>
+		</mapper>
+	</pathconvert>
+
+	<target name="init">
+		<mkdir dir="bin" />
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="src">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+		<mkdir dir="dist" />
+	</target>
+	<target name="clean">
+		<delete dir="dist" />
+		<delete dir="bin" />
+	</target>
+	<target name="cleanall" depends="clean">
+		<ant antfile="build.xml" dir="${message-model.location}" inheritAll="false" target="clean" />
+	</target>
+
+	<target name="build-project" depends="init">
+		<javac destdir="bin" debug="true" srcdir="src" includeantruntime="false">
+			<classpath refid="build.classpath" />
+		</javac>
+	</target>
+	<target name="build-subprojects">
+		<ant antfile="build.xml" dir="${message-model.location}" inheritAll="false" target="build" />
+	</target>
+	<target name="build" depends="build-subprojects,build-project" />
+
+	<target name="jar" depends="cleanall,build">
+		<jar destfile="dist/${ant.project.name}.jar" basedir="bin" filesetmanifest="skip">
+			<fileset dir="${message-model.location}/bin" />
+			<manifest>
+				<attribute name="Class-Path" value=". ${manifest.classpath}" />
+				<attribute name="Main-Class" value="org.tgereci.message.processor.MessageProcessor" />
+			</manifest>
+		</jar>
+		<mkdir dir="dist/${ant.project.name}_lib" />
+		<copy todir="dist/${ant.project.name}_lib">
+			<fileset dir="lib">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+	</target>
+</project>
